@@ -1,27 +1,30 @@
 require("dotenv").config();
 
-const express = require("express")
-const mongoose = require("mongoose");
+const express = require("express");
 const cors = require("cors");
-const authRoutes = require("./routes/authRoutes");
 
-const connectDB = require("./config/db")
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
+const protect = require("./middleware/authMiddleware");
 
 const app = express();
 
-//middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/auth", authRoutes);
-
+// Database Connection
 connectDB();
 
-// Test Route
-app.get("/", (req, res) => {
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Protected Test Route
+app.get("/api/test", protect, (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Library Management System API is running 🚀",
+    message: "Protected Route Accessed Successfully",
+    user: req.user,
   });
 });
 
@@ -31,4 +34,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
-
