@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const protect = require("./middleware/authMiddleware");
+const bookRoutes = require("./routes/bookRoutes");
 
 const app = express();
 
@@ -18,6 +19,7 @@ connectDB();
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/books", bookRoutes);
 
 // Protected Test Route
 app.get("/api/test", protect, (req, res) => {
