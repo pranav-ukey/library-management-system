@@ -1,4 +1,5 @@
 const Book = require("../models/Book");
+const Borrow = require("../models/Borrow");
 
 const addBook = async (req, res) => {
   try {
@@ -145,6 +146,67 @@ const deleteBook = async (req, res) => {
   }
 };
 
+const borrowBook = async (req, res) => {
+  try {
+    const memberId = req.user.id;
+    const bookId = req.params.id;
+
+    // Check if book exists
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    // Check availability
+    if (book.availableQuantity <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Book is not available",
+      });
+    }
+
+    
+    // Check if member already borrowed this book
+    const existingBorrow = await Borrow.findOne({
+      memberId,
+      bookId,
+      status: "borrowed",
+    });
+
+    if (existingBorrow) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already borrowed this book",
+      });
+    }
+
+    // Create borrow record
+    const borrow = await Borrow.create({
+      memberId,
+      bookId,
+    });
+
+    // Update available quantity
+    book.availableQuantity -= 1;
+    await book.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Book borrowed successfully",
+      data: borrow,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   addBook,
@@ -152,4 +214,5 @@ module.exports = {
   getBookById,
   updateBook,
   deleteBook,
+  borrowBook,
 };

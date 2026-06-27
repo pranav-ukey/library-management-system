@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { addBook, getAllBooks, getBookById, updateBook, deleteBook,} = require("../controllers/bookController");
+const { addBook, getAllBooks, getBookById, updateBook, deleteBook, borrowBook,} = require("../controllers/bookController");
 
 const protect = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
@@ -22,6 +22,13 @@ router.delete(
   protect,
   authorize("librarian"),
   deleteBook
+);
+
+router.post(
+  "/:id/borrow",
+  protect,
+  authorize("member"),
+  borrowBook
 );
 
 module.exports = router;
