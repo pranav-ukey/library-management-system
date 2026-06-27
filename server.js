@@ -34,6 +34,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Library Management System API is running 🚀",
+    version: "1.0.0",
   });
 });
 
