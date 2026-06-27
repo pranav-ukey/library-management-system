@@ -208,6 +208,60 @@ const borrowBook = async (req, res) => {
   }
 };
 
+const returnBook = async (req, res) => {
+  try {
+    const memberId = req.user.id;
+    const bookId = req.params.id;
+
+    // Check if book exists
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    // Find active borrow record
+    const borrow = await Borrow.findOne({
+      memberId,
+      bookId,
+      status: "borrowed",
+    });
+
+    if (!borrow) {
+      return res.status(400).json({
+        success: false,
+        message: "You have not borrowed this book",
+      });
+    }
+
+    // Mark as returned
+    borrow.status = "returned";
+    borrow.returnDate = new Date();
+
+    await borrow.save();
+
+    // Increase available quantity
+    book.availableQuantity += 1;
+
+    await book.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Book returned successfully",
+      data: borrow,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addBook,
   getAllBooks,
@@ -215,4 +269,5 @@ module.exports = {
   updateBook,
   deleteBook,
   borrowBook,
+  returnBook,
 };

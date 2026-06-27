@@ -7,6 +7,8 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const protect = require("./middleware/authMiddleware");
 const bookRoutes = require("./routes/bookRoutes");
+const memberRoutes = require("./routes/memberRoutes");
+const errorHandler = require("./middleware/errorMiddleware");
 
 const app = express();
 
@@ -20,15 +22,10 @@ connectDB();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
+app.use("/api/members", memberRoutes);
 
-// Protected Test Route
-app.get("/api/test", protect, (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Protected Route Accessed Successfully",
-    user: req.user,
-  });
-});
+// Global Error Middleware
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
