@@ -23,6 +23,7 @@ const register = async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        role: "member",
     });
 
     res.status(201).json({

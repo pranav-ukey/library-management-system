@@ -2,13 +2,22 @@ const express = require("express");
 
 const router = express.Router();
 
-const { getMyBorrowedBooks } = require("../controllers/memberController");
+const { getAllMembers, deleteMember, getMyBorrowedBooks, } = require("../controllers/memberController");
 
 const protect = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
 
+router.get( "/", protect, authorize("librarian"), getAllMembers );
+
+router.delete(
+  "/:id",
+  protect,
+  authorize("librarian"),
+  deleteMember
+);
+
 router.get(
-  "/my-borrowed-books",
+  "/me/books",
   protect,
   authorize("member"),
   getMyBorrowedBooks
