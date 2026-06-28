@@ -90,8 +90,8 @@ Create a `.env` file
 
 ```env
 PORT=5000
-MONGO_URL=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+MONGO_URL=mongodb_connection_string
+JWT_SECRET=jwt_secret_key
 ```
 
 Run the server
